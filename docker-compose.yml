@@ -1,0 +1,37 @@
+version: "3.8"
+services:
+  app:
+    container_name: app
+    build: .
+    env_file: .env
+    networks: 
+      - mi-red
+    ports:
+        - 8080:8080
+    restart: always
+    depends_on: 
+      - db
+  db:
+    container_name: db
+    image: "mariadb:latest"
+    environment: 
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=mi_db
+    restart: always
+    volumes:
+        - dbvol:/var/lib/mysql
+    networks: 
+      - mi-red
+#   front:
+#     container_name: front
+#     ports: 
+#       - 8080:8080
+#     build: ./vue-js-client-crud
+#     networks:
+#       - mi-red
+#     restart: always
+networks: 
+  mi-red:
+
+volumes:
+    dbvol:
