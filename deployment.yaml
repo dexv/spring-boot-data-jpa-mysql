@@ -1,0 +1,53 @@
+# Configuración usando solo un archivo yml.
+
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-deploy
+  labels:
+    rol: backend
+spec:
+  replicas: 3
+  selector:
+    #Estas etiquetas identifican a los pods asociados a este deployment
+    matchLabels:
+      rol: backend
+  template:
+    # Este es un PodTemplate
+    metadata:
+      labels:
+        rol: backend 
+    spec:
+      containers:
+        - name: springboot-container
+          image: springboot-img
+          imagePullPolicy: IfNotPresent
+          env:
+            # Agrega variables de entorno desde un arhivo
+            - name: DB_HOST
+              value: "192.168.0.4"
+            # Agrega variables de entorno seteadas manualmente
+            - name: DB_NAME
+              value: "mi_db"
+            - name: DB_USER
+              value: "root"
+            - name: DB_PASS
+              value: "secret"
+          ports:
+            - containerPort: 8080
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot-service
+spec:
+  ports:
+    - name: http-backend
+      port: 8080
+      targetPort: 8080 
+  selector:
+    rol: backend
+  type: LoadBalancer
+
